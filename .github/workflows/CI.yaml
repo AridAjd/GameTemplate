@@ -9,11 +9,11 @@ jobs:
     name: CI Validation
     runs-on: ubuntu-latest
     steps:
-      - name: Install Rokit
-        uses: CompeyDev/setup-rokit@v0.1.1
-
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Install Rokit
+        uses: CompeyDev/setup-rokit@v0.1.1
 
       - name: Lint
         run: |
