@@ -1,0 +1,58 @@
+name: Continuous Integration
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  rokit:
+    name: Install rokit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Rokit
+        uses: CompeyDev/setup-rokit@v0.1.1
+
+  lint:
+    name: Linting
+    runs-on: ubuntu-latest
+    needs: rokit
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lint
+        run: |
+          selene ./src
+
+  style:
+    name: Styling
+    runs-on: ubuntu-latest
+    needs: rokit
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Style
+        run: |
+          stylua .
+  deploy:
+    name: Deploy to staging place
+    runs-on: ubuntu-latest
+    needs: rokit
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install wally packages
+        run: wally install
+
+      - name: Build place file
+        run: argon build -o Staging.rbxl
+
+      - name: Publish place
+        run: rbxcloud experience publish -a "$API_KEY" -u "$UID" -p "$PID" -t published -f "$FILE"
+        env:
+          UID: 5614943083              # Universe ID
+          PID: 18931979496              # Place ID
+          API_KEY: ${{ secrets.STAGING_API_KEY }} # API Key (keep this in your GitHub Repository Secrets)
+          FILE: Staging.rbxl         # Roblox place file (e.g. might have a step before this to build the file with Rojo)

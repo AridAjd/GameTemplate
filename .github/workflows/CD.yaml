@@ -1,0 +1,32 @@
+name: Continuous Deployment
+
+on:
+  release:
+    types:
+      - published
+      - edited
+
+jobs:
+  deploy:
+    name: Deploy to production place
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install rokit
+        uses: CompeyDev/setup-rokit@v0.1.1
+
+      - name: Install wally packages
+        run: wally install
+
+      - name: Build place file
+        run: argon build -o Production.rbxl
+
+      - name: Publish place
+        run: rbxcloud experience publish -a "$API_KEY" -u "$UID" -p "$PID" -t published -f "$FILE"
+        env:
+          UID: 5614943083              # Universe ID
+          PID: 16272285588              # Place ID
+          API_KEY: ${{ secrets.PRODUCTION_API_KEY }} # API Key (keep this in your GitHub Repository Secrets)
+          FILE: Production.rbxl         # Roblox place file (e.g. might have a step before this to build the file with Rojo)
