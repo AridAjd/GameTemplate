@@ -23,7 +23,7 @@ jobs:
       - name: Build place file
         run: argon build -o Production.rbxl
 
-      - name: Publish place
+      - name: Deploy to production place
         run: rbxcloud experience publish -a "$API_KEY" -u "$UID" -p "$PID" -t published -f "$FILE"
         env:
           UID: 5614943083              # Universe ID
